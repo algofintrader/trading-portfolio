@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420">
+  <g transform="translate(60,0)">
+    <g transform="translate(0,58) scale(0.30)">
+      <rect width="1024" height="1024" fill="#08080A" rx="0"/>
+      <radialGradient id="g" cx="55%" cy="18%" r="75%">
+        <stop offset="0%" stop-color="rgba(255,255,255,0.16)"/>
+        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+      </radialGradient>
+      <rect width="1024" height="1024" fill="url(#g)"/>
+      <rect x="82" y="82" width="860" height="860" rx="184" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.14)" stroke-width="10"/>
+      <rect x="118" y="118" width="788" height="788" rx="162" fill="rgba(255,255,255,0.04)"/>
+      <text x="512" y="545" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="380" font-weight="700" fill="rgba(255,255,255,0.90)">AS</text>
+      <circle cx="705" cy="698" r="18" fill="rgba(255,255,255,0.85)"/>
+    </g>
+    <text x="390" y="190" font-family="DejaVu Sans, Arial, sans-serif" font-size="86" font-weight="700" fill="rgba(255,255,255,0.92)">Artem Samundzhyan</text>
+    <text x="390" y="265" font-family="DejaVu Sans, Arial, sans-serif" font-size="40" font-weight="400" fill="rgba(255,255,255,0.62)">Trading Technology</text>
+  </g>
+</svg>

@@ -9,6 +9,9 @@ import {
   Clock,
   FileText,
   Gauge,
+  GanttChartSquare,
+  HeartPulse,
+  LineChart,
   Link as LinkIcon,
   Mail,
   Shield,
@@ -16,16 +19,12 @@ import {
   TerminalSquare,
   Users,
   Zap,
-  LineChart,
   BriefcaseBusiness,
-  HeartPulse,
-  GanttChartSquare,
 } from "lucide-react";
 
-// One-page portfolio focused on: turnarounds, ownership, execution+risk.
-// - Next.js (App Router): use this as app/page.tsx
-// - Tailwind enabled (no import needed)
-// - framer-motion + lucide-react
+// Next.js (App Router): use this as src/app/page.tsx
+// Tailwind enabled (no import needed)
+// framer-motion + lucide-react
 
 type CaseStudy = {
   title: string;
@@ -48,7 +47,6 @@ type Mode = {
   title: string;
   subtitle: string;
   bullets: string[];
-  cta: string;
 };
 
 function clsx(...v: Array<string | false | null | undefined>) {
@@ -168,10 +166,12 @@ function Nav() {
   const items = [
     { label: "Focus", href: "#focus" },
     { label: "Turnarounds", href: "#turnarounds" },
+    { label: "72-hour", href: "#turnarounds-72h" },
     { label: "Case studies", href: "#case-studies" },
-    { label: "Engagement", href: "#engagement" },
+    { label: "Work", href: "#work" },
     { label: "Contact", href: "#contact" },
   ];
+
   return (
     <div className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
@@ -181,7 +181,7 @@ function Nav() {
           </div>
           <div className="leading-tight">
             <div className="text-sm font-semibold">Artem Samundzhyan</div>
-            <div className="text-xs text-white/60">Trading Technology (Fractional)</div>
+            <div className="text-xs text-white/60">Trading Technology</div>
           </div>
         </a>
 
@@ -196,7 +196,7 @@ function Nav() {
             className="inline-flex items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm font-semibold text-black"
           >
             <Mail className="h-4 w-4" />
-            Reach out
+            Contact
           </a>
         </div>
       </div>
@@ -216,14 +216,39 @@ function GradientBg() {
   );
 }
 
-export default function TradingTechPortfolioTurnarounds() {
+function buildMailto(email: string) {
+  const subject = encodeURIComponent("Trading Technology — remote role / contract");
+
+  // IMPORTANT: use template literals (backticks) so the string can contain newlines without breaking TypeScript.
+  const bodyText = `Hi Artem —\n\nWe are building <exchange/broker/prop>. The pain is <execution/risk/reliability/UX>. We need an owner for <stream>.\n\nAre you open to remote full-time / contract?\n\nThanks,\n<Name>`;
+  const body = encodeURIComponent(bodyText);
+
+  return `mailto:${email}?subject=${subject}&body=${body}`;
+}
+
+function runMailtoSelfTests(url: string) {
+  // Minimal “test cases” in dev to catch the exact class of issues that caused the syntax error.
+  // These are safe in production (they won't run).
+  console.assert(url.startsWith("mailto:"), "mailto self-test: must start with mailto:");
+  console.assert(!url.includes("\n"), "mailto self-test: URL must not include raw newlines");
+  console.assert(url.includes("subject="), "mailto self-test: URL must include subject=");
+  console.assert(url.includes("body="), "mailto self-test: URL must include body=");
+}
+
+export default function Page() {
   const [copied, setCopied] = useState<"" | "email" | "tg">("");
 
   // Update these
-  const email = "thejobofmylife1@gmail.com";
-  const telegram = "@artem_tradingtech"; // update
+  const email = "algofinteh@gmail.com";
+  const telegram = "asamujan";
   const linkedin = "https://www.linkedin.com/in/samujan";
-  const companySite = "https://fintechalgo.tech";
+  const portfolioOrCompany = "https://fintechalgo.tech";
+
+  const mailto = useMemo(() => {
+    const url = buildMailto(email);
+    if (process.env.NODE_ENV !== "production") runMailtoSelfTests(url);
+    return url;
+  }, [email]);
 
   const stats = useMemo(
     () => [
@@ -237,7 +262,7 @@ export default function TradingTechPortfolioTurnarounds() {
         icon: <Users className="h-5 w-5" />,
         label: "Team led",
         value: "Up to 12",
-        hint: "Hiring, performance, delivery ownership.",
+        hint: "Hiring, performance, and delivery ownership.",
       },
       {
         icon: <Shield className="h-5 w-5" />,
@@ -249,7 +274,7 @@ export default function TradingTechPortfolioTurnarounds() {
         icon: <Gauge className="h-5 w-5" />,
         label: "Domain depth",
         value: "10+ yrs",
-        hint: "Fintech / exchange stack / prop trading tech.",
+        hint: "Fintech / exchange stack / prop trading technology.",
       },
     ],
     []
@@ -259,28 +284,28 @@ export default function TradingTechPortfolioTurnarounds() {
     () => [
       {
         icon: <Zap className="h-5 w-5" />,
-        title: "Direct Market Access & execution",
-        desc: "DMA patterns, FIX connectivity, order lifecycle, latency-sensitive pipelines.",
+        title: "Execution (DMA/FIX patterns)",
+        desc: "Order lifecycle, safe state handling, latency-sensitive pipelines, production discipline.",
       },
       {
         icon: <GanttChartSquare className="h-5 w-5" />,
         title: "Algorithmic trading systems",
-        desc: "High-speed strategies/robots, production hardening, safe deployment practices.",
+        desc: "Complex automation in real markets, guardrails, safe deployment, incident-ready operations.",
       },
       {
         icon: <HeartPulse className="h-5 w-5" />,
         title: "Real-time risk controls",
-        desc: "Limits, exposure monitoring, kill-switch workflows, operational safety.",
+        desc: "Limits, exposure monitoring, kill-switch workflows, operational safety and playbooks.",
       },
       {
         icon: <TerminalSquare className="h-5 w-5" />,
-        title: "Trader experience (Pro UI)",
-        desc: "Fast workflows, hotkeys, DOM/ladder, positions & risk panels.",
+        title: "Pro trader UX",
+        desc: "DOM/ladder workflows, hotkeys, positions & risk panels, high-speed interaction design.",
       },
       {
         icon: <BriefcaseBusiness className="h-5 w-5" />,
         title: "Leadership & turnarounds",
-        desc: "Hiring/firing, incident recovery, scope control, delivery under pressure.",
+        desc: "Unblock teams, restore cadence, resolve crises, make tough hiring/firing calls when needed.",
       },
     ],
     []
@@ -293,8 +318,8 @@ export default function TradingTechPortfolioTurnarounds() {
         title: "Stabilize production under volatility",
         when: "Incidents / market spikes",
         bullets: [
-          "Tighten limits & kill-switch paths so failures become safe.",
-          "Add observability and runbooks so the team stops firefighting blindly.",
+          "Tighten limits and kill-switch paths so failures become safe.",
+          "Add observability and runbooks so incidents stop being ‘mystical’.",
           "Make the execution chain measurable: latency, rejects, risk blocks.",
         ],
       },
@@ -305,7 +330,7 @@ export default function TradingTechPortfolioTurnarounds() {
         bullets: [
           "Clarify ownership, remove blockers, reset priorities to measurable outcomes.",
           "Handle tough people decisions fast and respectfully.",
-          "Turn chaos into a weekly cadence: milestones, risk list, release discipline.",
+          "Turn chaos into a cadence: milestones, risk list, release discipline.",
         ],
       },
       {
@@ -315,7 +340,7 @@ export default function TradingTechPortfolioTurnarounds() {
         bullets: [
           "Break big work into shippable slices — without breaking trading safety.",
           "Design internal APIs so product speed doesn’t kill reliability.",
-          "Deliver pilots that can scale into production features.",
+          "Deliver production-ready features, not demos.",
         ],
       },
     ],
@@ -332,7 +357,7 @@ export default function TradingTechPortfolioTurnarounds() {
           "Took ownership of incident response and set a single decision-maker loop.",
           "Mapped the market data → orders → risk → venue chain and made failures measurable (latency, rejects, risk blocks).",
           "Introduced a minimal runbook: top failure modes, safe fallback actions, escalation rules.",
-          "Prioritized a small set of fixes with maximum stability impact (guardrails + observability, not big refactors).",
+          "Prioritized fixes with maximum stability impact (guardrails + observability, not big refactors).",
         ],
         result: [
           "Incidents became predictable and faster to resolve.",
@@ -371,7 +396,7 @@ export default function TradingTechPortfolioTurnarounds() {
           "The platform had to stay reliable under bursty market conditions while supporting fast order workflows and integrations.",
         actions: [
           "Owned architecture decisions across execution flows and trading safety.",
-          "Improved reliability/monitoring so issues were detectable before they became incidents.",
+          "Improved reliability/monitoring so issues were detectable early.",
           "Delivered features in production cadence while managing a growing team.",
         ],
         outcome: [
@@ -382,7 +407,7 @@ export default function TradingTechPortfolioTurnarounds() {
         note: "Company / exact details available under NDA.",
       },
       {
-        title: "Prop trading terminal + risk workflows (large exposure)",
+        title: "Prop trading terminal + risk workflows (significant exposure)",
         summary:
           "Owned execution and risk-oriented workflows for a prop trading terminal used in a high-stakes environment.",
         situation:
@@ -390,7 +415,7 @@ export default function TradingTechPortfolioTurnarounds() {
         actions: [
           "Owned execution workflow design (order lifecycle, states, safety gates).",
           "Designed risk-focused UX: limits, exposure view, emergency actions.",
-          "Introduced incident-oriented discipline: monitoring, runbooks, measurable system behaviour.",
+          "Introduced incident-oriented discipline: monitoring, runbooks, measurable behaviour.",
         ],
         outcome: [
           "Faster trader workflows without sacrificing risk controls.",
@@ -424,34 +449,32 @@ export default function TradingTechPortfolioTurnarounds() {
   const modes: Mode[] = useMemo(
     () => [
       {
-        title: "Fractional / part-time (recommended)",
-        subtitle: "10–20 hours/week · remote · CET overlap",
+        title: "Remote full-time",
+        subtitle: "Remote · CET overlap · available now",
         bullets: [
-          "Own a clear outcome: execution chain, risk controls, or trader UX.",
-          "Work with your CTO/Head of Trading Tech; unblock teams; ship safely.",
-          "Convert to longer engagement if it’s a fit.",
+          "Own a critical stream: execution, risk controls, or venue connectivity.",
+          "Work directly with CTO / Head of Trading Tech.",
+          "Operate like an internal owner: delivery, reliability, accountability.",
         ],
-        cta: "Start with a pilot",
       },
       {
-        title: "Remote full-time",
-        subtitle: "If you need an owner for a critical stream",
+        title: "Remote contract (6–12 months)",
+        subtitle: "When you need an owner fast (incl. 12-month term)",
         bullets: [
           "Take responsibility for architecture + delivery + crisis response.",
-          "Build/reshape team, improve release discipline, stabilize production.",
-          "Operate like an internal leader, not an external vendor.",
+          "Stabilize production and restore release discipline.",
+          "Unblock the team and ship production-ready improvements.",
+          "A 12-month contract term is absolutely fine.",
         ],
-        cta: "Discuss availability",
       },
       {
         title: "Architecture / turnaround advisory",
         subtitle: "1–2 week assessment",
         bullets: [
           "Execution/risk review + measurable action plan.",
-          "Incident playbook + observability plan.",
-          "Roadmap for “active trader” capabilities.",
+          "Observability + incident playbook.",
+          "Roadmap for ‘active trader’ capabilities.",
         ],
-        cta: "Get an action plan",
       },
     ],
     []
@@ -460,11 +483,8 @@ export default function TradingTechPortfolioTurnarounds() {
   const faqs = useMemo(
     () => [
       { q: "Are you available to start now?", a: "Yes — I’m currently available and can start immediately (remote)." },
-      {
-        q: "Employee or contractor?",
-        a: "Either. Many teams start with a small paid pilot, then convert to longer engagement or hire.",
-      },
-      { q: "Time zone overlap with NL?", a: "I work with CET overlap daily. Short feedback loops are a priority." },
+      { q: "Employee or contractor?", a: "Either. The best format depends on your needs and timeline." },
+      { q: "Time zone overlap with NL?", a: "I overlap with CET daily. Short feedback loops are a priority." },
       {
         q: "Can you share exact venues/strategy details?",
         a: "Only under NDA. The public page stays intentionally high-level to respect confidentiality.",
@@ -500,7 +520,11 @@ export default function TradingTechPortfolioTurnarounds() {
             >
               <Pill>
                 <BadgeCheck className="mr-2 h-4 w-4" />
-                Fractional / Part-time · Remote · CET overlap
+                Remote · CET overlap · Available now
+              </Pill>
+              <Pill>
+                <LinkIcon className="mr-2 h-4 w-4" />
+                Open to relocate: Europe / Netherlands
               </Pill>
               <Pill>
                 <Shield className="mr-2 h-4 w-4" />
@@ -528,10 +552,10 @@ export default function TradingTechPortfolioTurnarounds() {
               transition={{ duration: 0.55, delay: 0.1 }}
               className="mt-4 max-w-2xl text-sm leading-6 text-white/70 sm:text-base"
             >
-              I help exchanges, brokers, and prop teams stabilise production and ship prop-grade
-              capabilities: execution flows, real-time risk controls, and fast trader UX.
-              Selected work includes a prop terminal used in a high-stakes environment, complex venue
-              connectors, and API collaboration with BitMart (details under NDA).
+              I help exchanges, brokers, and prop teams stabilise production and ship prop-grade capabilities:
+              execution flows, real-time risk controls, and fast trader UX. Selected work includes a prop trading
+              terminal used in a high-stakes environment, complex venue connectors, and API collaboration with BitMart
+              (details under NDA). I’m remote-first now and open to relocating to Europe — including the Netherlands — for the right role.
             </motion.p>
 
             <motion.div
@@ -540,9 +564,9 @@ export default function TradingTechPortfolioTurnarounds() {
               transition={{ duration: 0.55, delay: 0.15 }}
               className="mt-7 flex flex-wrap items-center gap-3"
             >
-              <PrimaryButton href="#contact">Talk to me</PrimaryButton>
+              <PrimaryButton href={mailto}>Email me</PrimaryButton>
               <SecondaryButton href={linkedin}>LinkedIn</SecondaryButton>
-              <SecondaryButton href={companySite}>Company site</SecondaryButton>
+              <SecondaryButton href={portfolioOrCompany}>Portfolio</SecondaryButton>
             </motion.div>
 
             <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-white/60">
@@ -567,13 +591,6 @@ export default function TradingTechPortfolioTurnarounds() {
                 <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} hint={s.hint} />
               ))}
             </div>
-            <div className="mt-4 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-              <div className="text-sm font-semibold text-white">How we start</div>
-              <div className="mt-2 text-sm leading-6 text-white/70">
-                Start with a small paid pilot: risk controls/kill-switch + monitoring, or a pro
-                trader UX module. Ship something real, then expand.
-              </div>
-            </div>
           </div>
         </div>
       </header>
@@ -582,9 +599,9 @@ export default function TradingTechPortfolioTurnarounds() {
       <section className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <Anchor id="focus" />
         <SectionTitle
-          eyebrow="What I do"
-          title="End-to-end trading tech, plus leadership under pressure"
-          desc="Built for teams that need someone to own the outcome — execution, risk, and delivery — not just write code."
+          eyebrow="Focus"
+          title="What I own"
+          desc="I’m strongest when you need an owner for a critical stream — not a narrow task executor."
         />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -610,7 +627,7 @@ export default function TradingTechPortfolioTurnarounds() {
         <SectionTitle
           eyebrow="Turnarounds"
           title="How I pull projects back on track"
-          desc="When things break (incidents, delivery problems, unclear ownership), I bring structure, measurable controls, and shipping rhythm."
+          desc="When things break (incidents, delivery problems, unclear ownership), I bring structure, measurable controls, and a shipping rhythm."
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -636,8 +653,9 @@ export default function TradingTechPortfolioTurnarounds() {
         </div>
       </section>
 
-      {/* 72-HOUR TURNAROUNDS */}
+      {/* 72-HOUR */}
       <section className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <Anchor id="turnarounds-72h" />
         <SectionTitle
           eyebrow="72-hour turnarounds"
           title="When it’s on fire, I make it controllable — fast"
@@ -727,33 +745,15 @@ export default function TradingTechPortfolioTurnarounds() {
             </Card>
           ))}
         </div>
-
-        <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="text-sm font-semibold text-white">Want a one-pager?</div>
-              <div className="mt-1 text-sm text-white/70">
-                I can send a short capability sheet (focus areas, engagement modes, pilot scopes).
-              </div>
-            </div>
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/0 px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/5"
-            >
-              <FileText className="h-4 w-4" />
-              Request the 1-pager
-            </a>
-          </div>
-        </div>
       </section>
 
-      {/* ENGAGEMENT */}
+      {/* WORK */}
       <section className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <Anchor id="engagement" />
+        <Anchor id="work" />
         <SectionTitle
           eyebrow="Engagement"
-          title="Remote, part-time by default — designed for speed"
-          desc="Start fractional, ship a pilot, then expand or convert. This keeps risk low and value obvious."
+          title="Remote-first — designed for speed"
+          desc="Open to remote full-time and contracts. Clear ownership, fast feedback loops, production discipline."
         />
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -774,7 +774,7 @@ export default function TradingTechPortfolioTurnarounds() {
                   href="#contact"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
                 >
-                  {m.cta}
+                  Contact
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
@@ -784,29 +784,29 @@ export default function TradingTechPortfolioTurnarounds() {
 
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
           <Card>
-            <div className="text-base font-semibold text-white">Typical pilot scopes</div>
-            <div className="mt-2 text-sm text-white/70">Pick one. We ship it. Then we expand.</div>
+            <div className="text-base font-semibold text-white">What I can own</div>
+            <div className="mt-2 text-sm text-white/70">Pick one stream. I take ownership and drive it to stable production.</div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {[
                 {
                   icon: <HeartPulse className="h-4 w-4" />,
-                  title: "Risk controls pack",
-                  desc: "Limits, exposure, kill-switch flows, monitoring.",
+                  title: "Risk controls",
+                  desc: "Limits, exposure, kill-switch flows, operational safety.",
                 },
                 {
                   icon: <TerminalSquare className="h-4 w-4" />,
-                  title: "Pro trader UX",
-                  desc: "Fast order flows, hotkeys, DOM/ladder module.",
+                  title: "Trader UX",
+                  desc: "Fast order flows, hotkeys, DOM/ladder workflows.",
                 },
                 {
                   icon: <Zap className="h-4 w-4" />,
-                  title: "Execution chain review",
-                  desc: "Latency map + reliability action plan.",
+                  title: "Execution chain",
+                  desc: "Order lifecycle, reliability, latency map, correctness.",
                 },
                 {
                   icon: <Gauge className="h-4 w-4" />,
-                  title: "Observability & runbooks",
-                  desc: "Dashboards, alerts, incident response patterns.",
+                  title: "Observability & incidents",
+                  desc: "Dashboards, alerts, runbooks, incident response discipline.",
                 },
               ].map((p) => (
                 <div key={p.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -837,87 +837,17 @@ export default function TradingTechPortfolioTurnarounds() {
       {/* CONTACT */}
       <section className="relative mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6">
         <Anchor id="contact" />
-        <SectionTitle
-          eyebrow="Contact"
-          title="Let’s talk"
-          desc="Short is fine: what you build, where it hurts (execution/risk/reliability/UX), and what success looks like."
-        />
+        <SectionTitle eyebrow="Contact" title="Direct contacts" desc="No forms. Telegram is best for a fast reply." />
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
-            <div className="text-sm font-semibold text-white">Send a message</div>
-            <div className="mt-1 text-sm text-white/70">This opens your mail client with a prepared email.</div>
-
-            <form
-              className="mt-6 grid gap-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget as HTMLFormElement;
-                const data = new FormData(form);
-                const name = String(data.get("name") || "");
-                const company = String(data.get("company") || "");
-                const msg = String(data.get("message") || "");
-                const subject = encodeURIComponent(`Trading Tech — ${company} ${name}`.trim());
-                const body = encodeURIComponent(
-                  `Name: ${name}\nCompany: ${company}\n\n${msg}\n\n---\nSent from my portfolio page.`
-                );
-                window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-              }}
-            >
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="text-xs font-semibold text-white/70">Your name</label>
-                  <input
-                    name="name"
-                    required
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/25"
-                    placeholder="Jane Doe"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-white/70">Company</label>
-                  <input
-                    name="company"
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/25"
-                    placeholder="Bitvavo / OneTrading / Nxchange / ..."
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-white/70">Message</label>
-                <textarea
-                  name="message"
-                  required
-                  rows={5}
-                  className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/25"
-                  placeholder="What are you building? Where is it hurting?"
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90"
-                >
-                  <Mail className="h-4 w-4" />
-                  Email me
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-                <a
-                  href={linkedin}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-4 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/5"
-                >
-                  <LinkIcon className="h-4 w-4" />
-                  LinkedIn
-                </a>
-              </div>
-            </form>
-          </Card>
-
+        <div className="grid gap-4">
           <Card>
-            <div className="text-sm font-semibold text-white">Direct contacts</div>
-            <div className="mt-1 text-sm text-white/70">Prefer quick async? Use email or Telegram.</div>
+            <div className="text-sm font-semibold text-white">Reach out</div>
+            <div className="mt-1 text-sm text-white/70">
+              If you're reaching out about a role: share the team size, trading surface (exchange/broker/prop), and what’s currently painful
+              (execution, risk, reliability, or trader UX). I reply fast.
+            </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="text-xs font-semibold text-white/70">Email</div>
                 <div className="mt-1 break-all text-sm font-semibold text-white">{email}</div>
@@ -929,7 +859,17 @@ export default function TradingTechPortfolioTurnarounds() {
                   >
                     {copied === "email" ? "Copied" : "Copy"}
                   </button>
-                  <a href={`mailto:${email}`} className="rounded-xl bg-white px-3 py-2 text-xs font-semibold text-black">
+                  <a href={mailto} className="rounded-xl bg-white px-3 py-2 text-xs font-semibold text-black">
+                    Open
+                  </a>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="text-xs font-semibold text-white/70">LinkedIn</div>
+                <div className="mt-1 break-all text-sm font-semibold text-white">{linkedin}</div>
+                <div className="mt-3 flex items-center gap-2">
+                  <a href={linkedin} className="rounded-xl bg-white px-3 py-2 text-xs font-semibold text-black">
                     Open
                   </a>
                 </div>
@@ -954,11 +894,15 @@ export default function TradingTechPortfolioTurnarounds() {
                   </a>
                 </div>
               </div>
+            </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="text-xs font-semibold text-white/70">Location / hours</div>
-                <div className="mt-1 text-sm text-white/70">UTC+4 · CET overlap daily · Remote-first · NDA-friendly</div>
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="text-xs font-semibold uppercase tracking-wide text-white/60">Quick note template</div>
+              <div className="mt-2 text-sm leading-6 text-white/70">
+                Hi Artem — we’re building &lt;exchange/broker/prop&gt;. The pain is &lt;execution/risk/reliability/UX&gt;. We need an owner for
+                &lt;stream&gt;. Are you open to remote full-time / contract?
               </div>
+              <div className="mt-3 text-xs text-white/55">UTC+4 · CET overlap daily · NDA-friendly</div>
             </div>
           </Card>
         </div>
@@ -966,8 +910,12 @@ export default function TradingTechPortfolioTurnarounds() {
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between">
           <div>© {new Date().getFullYear()} Artem Samundzhyan · Trading Technology</div>
           <div className="flex flex-wrap items-center gap-3">
-            <a href={linkedin} className="hover:text-white">LinkedIn</a>
-            <a href={companySite} className="hover:text-white">FinTechAlgo</a>
+            <a href={linkedin} className="hover:text-white">
+              LinkedIn
+            </a>
+            <a href={portfolioOrCompany} className="hover:text-white">
+              Portfolio
+            </a>
           </div>
         </footer>
       </section>
